@@ -1,7 +1,7 @@
 from flask import (
     Flask, render_template, request, redirect, jsonify, url_for, flash)
 from sqlalchemy import create_engine, asc
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from database_setup import Base, Restaurant, MenuItem, User
 from flask import session as login_session
 import random
@@ -19,12 +19,9 @@ APPLICATION_NAME = "Restaurant Menu Application"
 
 # Connect to Database and create database session
 engine = create_engine(
-    'sqlite:///restaurantmenuwithusers.db',
-    connect_args={'check_same_thread': False})
+    'postgresql://catalog:123@localhost/catalog')
 Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+session = scoped_session(sessionmaker(bind=engine))
 
 
 # Login function and create anti-forgery state token
@@ -429,6 +426,6 @@ def deleteMenuItem(restaurant_id, menu_id):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
+    app.secret_key = 'new_super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+    app.run()
